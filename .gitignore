@@ -1,0 +1,11 @@
+memrun
+*.rsbin
+*.gobin
+cpu/fib
+cpu/sieve
+cpu/collatz
+cpu/pi
+cpu/listsum
+http/server
+http/server-go
+__pycache__/
