@@ -9,3 +9,4 @@ cpu/listsum
 http/server
 http/server-go
 __pycache__/
+cpu/nthprime
