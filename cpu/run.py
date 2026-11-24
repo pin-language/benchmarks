@@ -3,6 +3,7 @@
 
 Needs: pin (on PATH, or PIN=/path/to/pin), rustc, go, php, python3, a C compiler.
 Usage: python3 cpu/run.py [bench ...]   -> prints a table and writes cpu/results.json
+(running only some benchmarks updates their entries and keeps the others)
 """
 import json, os, resource, shutil, subprocess, sys, time
 
@@ -17,7 +18,7 @@ LANGS = {
     "php":      lambda b: ["php", "-d", "opcache.enable_cli=0", "-d", "memory_limit=-1", f"{b}.php"],
     "python":   lambda b: ["python3", f"{b}.py"],
 }
-BENCHES = sys.argv[1:] or ["fib", "sieve", "collatz", "pi", "listsum"]
+BENCHES = sys.argv[1:] or ["fib", "sieve", "collatz", "pi", "listsum", "nthprime"]
 
 
 def run_once(cmd):
@@ -54,7 +55,11 @@ if __name__ == "__main__":
         subprocess.run(["cc", "-O2", "memrun.c", "-o", "memrun"], check=True)
     for b in BENCHES:
         build(b)
-    results = {}
+    try:
+        with open("results.json") as f:
+            results = json.load(f)
+    except FileNotFoundError:
+        results = {}
     for b in BENCHES:
         results[b] = {}
         outputs = {}

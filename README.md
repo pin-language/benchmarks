@@ -15,8 +15,15 @@ tracing JIT), Python 3.15 · best of 3 runs · 2026-10-25
 | pi — 100M Leibniz terms | **0.090s** | 0.090s | 0.091s | 0.930s | 2.235s | 13.239s |
 | listsum — build 5M-item lists ×10, sum | **0.114s** | 0.131s | 0.183s | 0.440s | 1.192s | 4.754s |
 | fib(35) — recursion* | 0.027s | 0.027s | 0.031s | 0.226s | 0.878s | 0.796s |
+| nthprime — 1,000,000th prime by trial division† | **0.420s** | 0.445s | 0.408s | 0.919s | 7.820s | 14.876s |
 
 \* clang optimises this recursion in ways that say little about the language; do not quote it.
+
+† Added 2026-11-24 with newer versions than the rows above: Pin 0.9.0 plus commit 332de42 on `next` (not yet
+released), Go 1.27.4, Python 3.15.2; same machine, Rust and PHP. The released Pin 0.9.0 takes about 0.45s on
+this loop. The change behind the difference: Pin now emits `$p * $p > $x` as `$x < $p * $p`, which on the M2
+runs this loop about 11% faster (the order Go's compiler picks); it made no difference on the other loops here.
+Why the CPU prefers that order is not known, and it has not been measured on x86.
 
 Read with care:
 - These are small CPU loops, not applications. They show that Pin compiles to code as fast as Rust and Go,
@@ -28,7 +35,7 @@ Read with care:
   Rust) — see `cpu/results-linux-2core.json` (2-core x86-64 container, earlier Pin version).
 - Pin's `+ - *` do not check for int overflow (neither do Rust release builds or Go).
 
-Run: `python3 cpu/run.py` (or `python3 cpu/run.py sieve pi`). It builds every version first; it needs
+Run: `python3 cpu/run.py` (or `python3 cpu/run.py sieve pi`, which keeps the other results in `cpu/results.json`). It builds every version first; it needs
 `pin` on the PATH (or `PIN=/path/to/pin`), `rustc`, `go`, `php`, `python3` and a C compiler.
 
 ## HTTP (`http/`)
